@@ -1,0 +1,18 @@
+title Login Service - Refresh Token Grant
+
+autoactivation true
+
+actor RSP
+participant Mobius Client
+participant Login Service
+database Postgres
+
+RSP->Mobius Client: trie to access\nprotected resource\nbut AT is expired
+Mobius Client->Login Service: POST /oauth2/token\n              RT
+Login Service->Postgres:lookup RT
+Postgres--xLogin Service:
+rbox over Login Service:generate\n     AT
+Login Service->Postgres: upsert RT
+Postgres--xLogin Service:
+Login Service-->Mobius Client: success\n AT&RT
+rbox over Mobius Client: save AT&RT in \n  local storage

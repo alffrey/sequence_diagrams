@@ -1,0 +1,37 @@
+title Payment Service
+
+autoactivation true
+
+actor RSP
+participant Mobius Client
+participant Mobius Payment Service
+participant Terminal
+participant Square #ff8800
+database Payment
+
+RSP->Mobius Client: Finish / Pay
+Mobius Client->Mobius Payment Service: POST /api/square/checkouts
+Mobius Payment Service->Payment: persist request data
+Payment--xMobius Payment Service:
+Mobius Payment Service->Square: POST /v2/terminals/checkouts
+Square--xMobius Payment Service: pending
+Mobius Payment Service->Payment: persist response data
+Payment--xMobius Payment Service:
+Mobius Payment Service--xMobius Client: pending
+
+Square->Terminal: init
+Terminal--xSquare:
+Square->Mobius Payment Service: in progress
+rbox over Mobius Payment Service: Webhook Listener
+Mobius Payment Service->Payment: persist notification data
+Payment--xMobius Payment Service:
+Mobius Payment Service--xMobius Client: in progress
+Square->Terminal: next
+RSP-->Terminal:           Card\nTap / Swipe / Insert
+Terminal--xSquare:
+Square->Mobius Payment Service:completed
+rbox over Mobius Payment Service: Webhook Listener
+Mobius Payment Service->Payment: persist notification data
+Payment--xMobius Payment Service:
+
+Mobius Payment Service--xMobius Client: completed

@@ -1,0 +1,15 @@
+title Login Service - Logout
+
+autoactivation true
+
+actor RSP
+participant Mobius Client
+participant Login Service
+database Postgres
+
+RSP->Mobius Client: logout
+Mobius Client->Login Service: DELETE /oauth2/token\n              RT
+Login Service->Postgres:delete RT
+Postgres--xLogin Service:
+Login Service-->Mobius Client: success
+rbox over Mobius Client: clear local storage

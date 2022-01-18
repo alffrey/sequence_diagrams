@@ -1,0 +1,22 @@
+title Login Service - Auth for Protected Resource
+
+autoactivation true
+
+actor RSP
+participant Mobius Client
+participant Protected Resource
+
+RSP->Mobius Client: <protected resource>
+rbox over Mobius Client:Is AT expired?\n        No
+Mobius Client->Protected Resource:<protected resource>\n               AT
+rbox over Protected Resource: AT is valid
+Protected Resource-->Mobius Client:success
+deactivate Mobius Client
+
+RSP->Mobius Client: <protected resource>
+rbox over Mobius Client:Is AT expired?\n        Yes
+ref over Mobius Client:Obtain new RT using \nRefresh Token Grant\n              flow
+Mobius Client->Protected Resource:<protected resource>\n               AT
+rbox over Protected Resource: AT is valid
+Protected Resource-->Mobius Client:success
+deactivate Mobius Client
