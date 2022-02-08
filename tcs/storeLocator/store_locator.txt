@@ -1,0 +1,30 @@
+title Store Locator Service - Mobius
+
+bottomparticipants 
+participant Mobius Client
+participant Mobius Server
+participant Yotta CDN
+participant Web Server
+participant ECOM
+
+autoactivation true
+
+Mobius Client->Mobius Server: GET locations
+rbox over Mobius Server: Store locator\nProxy Service
+Mobius Server->Yotta CDN: GET locations
+rbox over Yotta CDN:Blocking rules
+Yotta CDN->Web Server:
+Web Server->ECOM:
+rbox over ECOM: Store locator\n    service
+ECOM-->Web Server:
+Web Server-->Yotta CDN:
+Yotta CDN-->Mobius Server:
+Mobius Server--xMobius Client:
+====
+
+Mobius Client->Web Server: GET locations
+rbox over Web Server:   whitelisting of origins\n to prevent CORS error
+Web Server->ECOM:
+rbox over ECOM: Store locator\n    service
+ECOM-->Web Server:
+Web Server--xMobius Client:

@@ -1,6 +1,6 @@
 title Payment Service
 
-autoactivation true
+autoactivation on
 
 actor RSP
 participant Mobius Client
@@ -10,7 +10,7 @@ participant Square #ff8800
 database Payment
 
 RSP->Mobius Client: Finish / Pay
-Mobius Client->Mobius Payment Service: POST /api/square/checkouts
+Mobius Client->Mobius Payment Service: POST /api/payment/checkouts
 Mobius Payment Service->Payment: persist request data
 Payment--xMobius Payment Service:
 Mobius Payment Service->Square: POST /v2/terminals/checkouts
@@ -19,19 +19,45 @@ Mobius Payment Service->Payment: persist response data
 Payment--xMobius Payment Service:
 Mobius Payment Service--xMobius Client: pending
 
+Mobius Client->Mobius Payment Service:GET /api/payment/notifier
+rbox over Mobius Payment Service: Server Sent Events\n          handler
+Mobius Payment Service->Mobius Client:
+deactivate Mobius Client
+
 Square->Terminal: init
 Terminal--xSquare:
+
+Square->Mobius Payment Service: pending
+rbox over Mobius Payment Service: Webhook Listener
+Mobius Payment Service->Payment: persist notification data
+Payment--xMobius Payment Service:
+Mobius Payment Service--xMobius Client: pending
+
+Mobius Payment Service->Mobius Client: event response - pending
+deactivate Mobius Client
+
 Square->Mobius Payment Service: in progress
 rbox over Mobius Payment Service: Webhook Listener
 Mobius Payment Service->Payment: persist notification data
 Payment--xMobius Payment Service:
 Mobius Payment Service--xMobius Client: in progress
+
+Mobius Payment Service->Mobius Client: event response - in progress
+deactivate Mobius Client
+
 Square->Terminal: next
 RSP-->Terminal:           Card\nTap / Swipe / Insert
 Terminal--xSquare:
+
 Square->Mobius Payment Service:completed
 rbox over Mobius Payment Service: Webhook Listener
 Mobius Payment Service->Payment: persist notification data
 Payment--xMobius Payment Service:
 
 Mobius Payment Service--xMobius Client: completed
+
+Mobius Payment Service->Mobius Client: event response - completed
+deactivate Mobius Client
+
+
+Mobius Payment Service--xMobius Client:connection closed
