@@ -1,0 +1,43 @@
+title Simplified Login
+
+actor RSP
+participant Login
+participant LDAP
+database Local Storge
+
+RSP->Login:username + PIN
+Login->Local Storge: does PIN exist in local storage for user?
+Local Storge-->Login:No
+Login-->RSP:show login with password
+RSP->Login:username + password
+Login->LDAP:authenticate
+LDAP-->Login:success
+Login->Local Storge: does PIN exist in local storage for user?
+Local Storge-->Login:No
+Login->RSP: Show screen to setup PIN
+RSP->Login:provides PIN
+Login->Local Storge:store PIN in local storage for user and store PIN.\n                          TTL: Midnight
+Login-->RSP: success
+
+==subsequent logins==
+rbox over RSP:PIN Screen \nshowing RSP's name \nand Logut option
+RSP->Login: PIN
+Login->Local Storge: is local storage TTL valid?
+Local Storge-->Login: Yes
+Login->Local Storge:is PIN valid?
+Local Storge-->Login: No
+Login-->RSP: Error message\nEnter PIN again
+RSP->Login: PIN
+Login->Local Storge: is local storage TTL valid?
+Local Storge-->Login: Yes
+Login->Local Storge:is PIN valid?
+Local Storge-->Login: Yes
+Login-->RSP:success
+
+space 2
+rbox over RSP:PIN Screen \nshowing RSP's name \nand Logut option
+RSP->Login:PIN
+Login->Local Storge: is local storage TTL valid?
+Local Storge-->Login: No
+Login-->RSP:failure
+rbox over RSP:Login Screen\nusername + passwd

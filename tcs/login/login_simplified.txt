@@ -1,0 +1,35 @@
+title Simplified Login
+
+actor RSP
+participant Login
+participant LDAP
+database Login DB
+
+RSP->Login:username + pin
+Login->Login DB: is currentTime - lastAuthTime > 15 hrs
+Login DB-->Login: Yes
+Login->RSP: need password
+RSP->Login:username + passwd
+Login->LDAP: authenticate
+LDAP-->Login: success
+Login->Login DB: store last auth timestamp
+Login DB-->Login:
+Login-->RSP:success
+
+==subsequent logins==
+
+RSP->Login:username + pin
+Login->Login DB: is currentTime - lastAuthTime > 15 hrs
+Login DB-->Login: No
+Login->Login DB:is PIN valid?
+Login DB-->Login: Yes
+Login-->RSP:success
+
+space 2
+
+RSP->Login:username + pin
+Login->Login DB: is currentTime - lastAuthTime > 15 hrs
+Login DB-->Login: No
+Login->Login DB:is PIN valid?
+Login DB-->Login: No
+Login-->RSP:failure
