@@ -1,0 +1,30 @@
+title Aisle Extension - Mobius
+
+autoactivation
+
+actor RSP
+participant Mobius
+participant Catalog Service
+participant Aisle Extension
+participant Kibo
+
+RSP->Mobius: Find products\nnot in store
+Mobius->Catalog Service: api call\nto fetch\ncategories list
+Catalog Service-->Mobius:
+Mobius-->RSP: serve\nCategories page
+
+RSP->Mobius: selects category
+Mobius->Aisle Extension:<Endless-base-URL>\n?category=<category-identifier>\n&storeId=<storeId>
+Aisle Extension->Kibo: request\nquestionnaire
+Kibo-->Aisle Extension:
+Aisle Extension-->Mobius:
+Mobius-->RSP: navigates to\nAisle Extension page
+
+RSP->Aisle Extension: answers all questions
+Aisle Extension->Kibo:
+Kibo-->Aisle Extension:
+Aisle Extension-->RSP: results page
+
+RSP->Aisle Extension: clicks on product tile
+Aisle Extension->Mobius: navigates to pdp url
+Mobius-->RSP: Mobius PDP page\nwith options to\n1.Add To Cart\n2.Back to Results
