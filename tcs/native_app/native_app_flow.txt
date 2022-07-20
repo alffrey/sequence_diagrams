@@ -1,0 +1,59 @@
+title Mobius Mobile App
+
+actor User
+participant App
+participant Reader SDK
+participant Mobius PWA
+participant Mobius Payment Service
+participant Mobius Checkout Service
+participant Vault
+participant Square API
+database Postgres
+
+User->App:launches
+App->Reader SDK: check auth status of Reader SDK\nAuthorizationManager.authorized? jump to Transaction Flow\nelse - continue
+
+rbox over App:Prod or Sandbox?
+rbox over App:read hardware device name
+App->Mobius Payment Service: GET /api/v1/location/{store_abbr}
+Mobius Payment Service->Square API:/v2/locations
+Square API-->Mobius Payment Service:
+rbox over Mobius Payment Service:parse the response\ngenerate a map of Store Abbr - Location Id
+Mobius Payment Service-->App: location id
+App->Mobius Payment Service:POST /api/v1/payment/mobile/authorization-code\nlocation id\nauthenticate using "client key" in the absence of access token
+Mobius Payment Service->Vault: fetch Square Access Token
+Vault-->Mobius Payment Service:
+Mobius Payment Service->Square API: POST /mobile/authorization-code
+Square API-->Mobius Payment Service: mobile auth code
+Mobius Payment Service-->App:mobile auth code
+
+App->Reader SDK: Authenticate and initialize Reader SDK\nmobile auth code and location id
+Reader SDK-->App:success
+
+App->Reader SDK:check ReaderManager.paired? continue\nelse - ask to pair a reader
+Reader SDK-->App:success
+
+==Transaction flow==
+App->Mobius PWA:
+rbox over Mobius PWA:Login
+rbox over Mobius PWA:Take Checkout
+rbox over Mobius PWA:Order Summary page\n(click on Pay now)
+Mobius PWA ->App: event "Pay Now"\namount\norderId\nstoreId\nemployeeId\naccessToken\nrefreshToken
+rbox over App: save tokens in\nasync storage
+
+App->Reader SDK: initiate checkout
+Reader SDK-->App: payment response
+
+App->Mobius Payment Service: POST /api/v1/payment/details\naccessToken
+Mobius Payment Service->Postgres: save details
+Postgres-->Mobius Payment Service:success
+Mobius Payment Service-->App: success
+
+App->Mobius Checkout Service:POST /api/v1/orders/{id}/submit\naccessToken
+rbox over Mobius Checkout Service: order-services-v3 calls
+Mobius Checkout Service->Postgres:save order details
+Postgres-->Mobius Checkout Service: success
+Mobius Checkout Service-->App:success
+
+App->Mobius PWA:
+rbox over Mobius PWA: Order confirmation screen\nemail receipt
