@@ -1,0 +1,84 @@
+title TCS Custom Spaces AR Flow - Scenario 1
+
+actor Designer
+actor Customer
+
+participant AR App
+
+participant Custom Design Tool
+database Component Models
+
+Custom Design Tool->Component Models: Pre-designed models of\ncustom space displayed\nin store
+
+rbox over Customer: Browsing Custom Closet\nsection in our store
+Designer->Customer:Introduces Customer to\nthe AR feature within\nConsumer App
+Customer->AR App:Scans the QR code\ndisplayed on the mockups
+AR App->Component Models: Fetches the information about the scanned\ncustom space
+Component Models-->AR App:
+AR App-->Customer:
+rbox over Customer:Able to see hotpoints\nover components in the \nsapce which provide info\nabout price, related products,\netc.
+rbox over Customer: Able to view space in various\ncolors, materials, configurations
+
+================================================================================
+
+title TCS Custom Spaces AR Flow - Scenario 2
+
+actor Designer
+actor Customer
+
+participant Custom Design Tool
+participant Ecom Website
+participant AR App
+database Component Models
+
+Designer->Customer:In-House consultation
+Designer->Custom Design Tool: Enters space dimension\nDesigns the space
+Custom Design Tool->Component Models:Get individual components
+Component Models-->Custom Design Tool:
+rbox over Custom Design Tool: Custom Space ID\ngenerated
+Custom Design Tool-->Designer: custom space id
+
+Designer->Customer: Shares the custom space id
+Customer->Ecom Website:Uses the custom space id\nto view their design in 2D / 3D
+Ecom Website->Custom Design Tool: Fetch composition data\nusing custom space id
+Custom Design Tool-->Ecom Website:metadata
+Ecom Website->Component Models: Get individual components
+Component Models-->Ecom Website:
+rbox over Ecom Website: generate custom space model\nusing metadata and\nindividual components
+Ecom Website-->Customer:
+
+Designer->Customer: Shares the custom space id
+Customer->AR App: Uses the custom space id\nto view their design in AR
+AR App->Custom Design Tool: Fetch composition data\nusing custom space id
+Custom Design Tool-->AR App:metadata
+AR App->Component Models:Get individual components
+Component Models-->AR App:
+rbox over AR App: generate custom space model\nusing metadata and\nindividual components
+AR App-->Customer:
+
+================================================================================
+
+title TCS Custom Spaces AR Flow - Scenario 3
+
+actor Designer
+actor Customer
+
+participant Custom Design Tool
+participant Ecom Website
+participant AR / VR App
+database Component Models
+
+Customer->Custom Design Tool: Enters space dimension\nDesigns the space
+Custom Design Tool->Component Models:Get individual components
+Component Models-->Custom Design Tool:
+rbox over Custom Design Tool: Custom Space ID\ngenerated
+Custom Design Tool-->Customer: custom space id
+Customer->Designer: Shares the custom space id
+
+Customer->AR / VR App: Uses the custom space id\nto view their design in AR / VR
+AR / VR App->Custom Design Tool: Fetch composition data\nusing custom space id
+Custom Design Tool-->AR / VR App:metadata
+AR / VR App->Component Models:Get individual components
+Component Models-->AR / VR App:
+rbox over AR / VR App: generate custom space model\nusing metadata and\nindividual components
+AR / VR App-->Customer:
