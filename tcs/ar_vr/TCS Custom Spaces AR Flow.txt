@@ -40,11 +40,10 @@ Custom Design Tool-->Designer: custom space id
 
 Designer->Customer: Shares the custom space id
 Customer->Ecom Website:Uses the custom space id\nto view their design in 2D / 3D
-Ecom Website->Custom Design Tool: Fetch composition data\nusing custom space id
-Custom Design Tool-->Ecom Website:metadata
+rbox over Ecom Website: Launch Custom Design Tool\nhosted via reverse proxy
 Ecom Website->Component Models: Get individual components
 Component Models-->Ecom Website:
-rbox over Ecom Website: generate custom space model\nusing metadata and\nindividual components
+rbox over Ecom Website: display custom space model\nusing individual components
 Ecom Website-->Customer:
 
 Designer->Customer: Shares the custom space id

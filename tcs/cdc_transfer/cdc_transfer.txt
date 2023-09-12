@@ -1,0 +1,47 @@
+
+title Transfer Cart from CDC to Mobius
+
+autoactivation on
+bottomparticipants 
+
+participant CDC
+participant Mobius
+participant Mobius-Payment-Service
+database Mobius Payments
+participant Pending Carts Service
+note over Pending Carts Service:New Service
+
+database Pending Carts
+participant Order Services v3
+
+rbox over CDC: Associate suspends\nan order
+CDC->Pending Carts Service: POST: Order#, Amount, Store Id
+Pending Carts Service->Pending Carts: Store Order Info
+Pending Carts-->Pending Carts Service: success
+Pending Carts Service-->CDC: success
+
+rbox over Mobius: Associate looks up\npending orders for\nthe store
+Mobius->Pending Carts Service: GET: Store Id
+Pending Carts Service->Pending Carts: fetch
+Pending Carts-->Pending Carts Service: data
+Pending Carts Service-->Mobius: pending order info
+
+rbox over Mobius: Select Order\nInitiate Payment
+Mobius->Mobius-Payment-Service: POST: payment
+Mobius-Payment-Service->Mobius Payments: save payment info\non success
+Mobius Payments-->Mobius-Payment-Service: success
+Mobius-Payment-Service-->Mobius: success
+rbox over Mobius: Resume Order\non CDC
+
+rbox over CDC: Check payment status
+CDC->Mobius-Payment-Service: GET: Order#, Store Id
+Mobius-Payment-Service->Mobius Payments:
+Mobius Payments-->Mobius-Payment-Service: success
+Mobius-Payment-Service-->CDC: success
+
+rbox over CDC: Generate Order XML\n& Submit Order
+CDC->Order Services v3: POST: order submit
+Order Services v3-->CDC: success
+rbox over CDC: Transaction complete
+
+space 3

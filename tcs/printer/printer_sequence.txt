@@ -1,0 +1,16 @@
+title Mobius - Receipt Printing
+
+autoactivation 
+
+participant Mobius Device
+participant Print Service
+participant Order Services V3
+participant Receipt Printer
+
+rbox over Mobius Device: User clicks\nPrint Receipt
+Mobius Device->Print Service:Order Number
+Print Service->Order Services V3:fetch order details
+Order Services V3-->Print Service:order details
+rbox over Print Service:build reciept
+Print Service->Receipt Printer:Print
+Print Service-->Mobius Device: success
