@@ -1,0 +1,44 @@
+title Create Shopping list
+
+autoactivation on
+bottomparticipants 
+
+actor Client
+
+participant Shopping-List-Service
+participant Big-Commerce
+participant Product-Service
+participant Catalog-Handler
+participant DynamoDb
+
+Client->Shopping-List-Service: Create a shopping list
+rbox over Shopping-List-Service: verify\ncustomtoken
+Shopping-List-Service->Big-Commerce: GET All Shopping lists
+Big-Commerce-->Shopping-List-Service:list of lists
+
+// getAccountShoppingListIds
+Shopping-List-Service->Big-Commerce:GET User
+Big-Commerce-->Shopping-List-Service:User info including\nACC-WISHLISTS
+rbox over Shopping-List-Service: obtain\naccount - lists
+rbox over Shopping-List-Service: filter lists belonging\nto selected account\n\n(including\nFrequently Ordered\nlist) 
+rbox over Shopping-List-Service: check list name for\nlength, duplicates\n& reserved keywords
+rbox over Shopping-List-Service: calculate\nitem count
+
+// updateBCProductID
+Shopping-List-Service->Product-Service:GET products
+Product-Service->DynamoDb:GET product mapping
+rbox over DynamoDb#red:split into batches\nof 10 due to PartiQL
+DynamoDb-->Product-Service:
+Product-Service->Catalog-Handler: GET products
+Catalog-Handler-->Product-Service:
+
+Product-Service-->Shopping-List-Service:
+rbox over Shopping-List-Service:updated request body\nimageUrl
+
+Shopping-List-Service->Big-Commerce:POST shopping list
+Big-Commerce-->Shopping-List-Service:
+Shopping-List-Service->Big-Commerce:GET User\nACC-WISHLISTS
+Big-Commerce-->Shopping-List-Service:
+Shopping-List-Service->Big-Commerce:POST User\nACC-WISHLISTS
+Big-Commerce-->Shopping-List-Service:
+Shopping-List-Service-->Client: List created
