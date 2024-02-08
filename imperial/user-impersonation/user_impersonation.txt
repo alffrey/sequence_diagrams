@@ -1,0 +1,36 @@
+title User Impersonation
+
+actor Sales Rep
+participant Storefront
+participant Imperial Login
+participant User-Account-Service
+participant ID Data Service
+
+autoactivation on
+
+Sales Rep->Storefront: Provides credential
+Storefront->Imperial Login: auth
+Imperial Login-->Storefront: success
+rbox over Storefront:Authorization\n& Customtoken\nreceived
+
+Storefront->User-Account-Service: fetch accounts
+User-Account-Service->ID Data Service:fetch accounts
+ID Data Service-->User-Account-Service:success
+User-Account-Service-->Storefront: success
+rbox over Storefront: Display Accounts\nmodal
+
+Sales Rep->Storefront:Select Account
+Storefront->User-Account-Service: fetch users based\non account selected
+User-Account-Service->ID Data Service:fetch accounts
+ID Data Service-->User-Account-Service:success
+User-Account-Service-->Storefront: success
+rbox over Storefront: Display Users\nmodal
+
+Sales Rep->Storefront:Select User
+Storefront->User-Account-Service: Impersonate User
+User-Account-Service->ID Data Service:get custom token\nfor impersonated user
+ID Data Service-->User-Account-Service: Authorization & Customtoken
+User-Account-Service-->Storefront: Authorization & Customtoken
+rbox over Storefront: Save tokens\nin local storage
+
+Sales Rep->Storefront: Continues browsing\nas impersonated user
